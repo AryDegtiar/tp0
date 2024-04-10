@@ -72,9 +72,10 @@ int main(void)
 	conexion = crear_conexion(ip, puerto);
 
 	// Enviamos al servidor el valor de CLAVE como mensaje
+	enviar_mensaje(valor, conexion, logger);
 
 	// Armamos y enviamos el paquete
-	paquete(conexion);
+	paquete2(conexion, logger);
 
 	terminar_programa(conexion, logger, config);
 
@@ -130,17 +131,28 @@ void leer_consola(t_log* logger)
 	free(leido);
 }
 
-void paquete(int conexion)
+void paquete2(int conexion, t_log* logger)
 {
 	// Ahora toca lo divertido!
 	char* leido;
-	t_paquete* paquete;
+	// Inicializo paquete
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	paquete->codigo_operacion = PAQUETE;
+	crear_buffer(paquete);
 
 	// Leemos y esta vez agregamos las lineas al paquete
+	leido = readline("> ");
+	// Itero hasta que se ingrese un string vacio
+	while(strcmp(leido, "") > 0){
+		agregar_a_paquete(paquete, leido, strlen(leido) +1);
+		leido = readline("> ");
+	}
+	enviar_paquete(paquete, conexion, logger);
 
+	// Libero memoria
+	free(leido);
+	eliminar_paquete(paquete);
 
-	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
-	
 }
 
 void terminar_programa(int conexion, t_log* logger, t_config* config)
@@ -149,4 +161,5 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
 	log_destroy(logger);
 	config_destroy(config);
+	liberar_conexion(conexion);
 }

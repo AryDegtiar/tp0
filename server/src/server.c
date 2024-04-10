@@ -18,6 +18,8 @@ int main(void) {
 			lista = recibir_paquete(cliente_fd);
 			log_info(logger, "Me llegaron los siguientes valores:\n");
 			list_iterate(lista, (void*) iterator);
+			// si quiero que no gener eerror puedo descomentar la linea que hace cerrar el server antes de esperar el cierre del cli
+			//return EXIT_FAILURE; 
 			break;
 		case -1:
 			log_error(logger, "el cliente se desconecto. Terminando servidor");
